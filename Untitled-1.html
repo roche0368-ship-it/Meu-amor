@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uma Carta Para Você 💌</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: "Poppins", sans-serif;
+      background: #d9d9d9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: #333;
+      transition: background 1.5s ease, color 1.5s ease;
+    }
+
+    /* Envelope fechado */
+    .envelope {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(6px);
+      transition: transform 1s ease, opacity 1s ease;
+    }
+
+    .envelope h1 { font-size: 2em; margin-bottom: 20px; color: #444; }
+    .btn-open {
+      background: linear-gradient(135deg, #aaa, #666);
+      color: white;
+      border: none;
+      padding: 15px 35px;
+      border-radius: 30px;
+      font-size: 1.2em;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, box-shadow 0.3s, background 0.5s;
+    }
+    .btn-open:hover { transform: scale(1.08); background: linear-gradient(135deg, #bbb, #888); }
+
+    /* Carta aberta */
+    .letter {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ff80bf, #a259ff);
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.5s ease;
+      color: #fff;
+      overflow-y: auto; /* permite rolagem */
+      padding: 40px 20px;
+      display: block; /* remove flex centralizado verticalmente */
+    }
+
+    .message-box {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 25px 45px;
+      border-radius: 25px;
+      box-shadow: 0 0 25px rgba(255, 105, 180, 0.5);
+      backdrop-filter: blur(6px);
+      max-width: 600px;
+      margin: 0 auto; /* centraliza horizontalmente */
+      width: 90%;
+      animation: appear 1.2s ease forwards;
+    }
+
+    h2 { font-size: 2.5em; text-shadow: 0 0 8px rgba(162, 89, 255, 0.7); margin-bottom: 15px; }
+    p { font-size: 1.3em; line-height: 1.6; }
+    .signature { margin-top: 25px; font-style: italic; font-size: 1.1em; opacity: 0.9; }
+
+    @keyframes appear { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .foto {
+      display: block;
+      margin: 25px auto;
+      width: 220px;
+      max-width: 80%;
+      border-radius: 15px;
+      border: 3px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 20px rgba(255, 182, 255, 0.6);
+      object-fit: cover;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .foto:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(255, 255, 255, 0.9); }
+
+    .hearts {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 20px;
+      animation: float 6s linear infinite;
+      text-shadow: 0 0 8px rgba(255, 182, 255, 0.8);
+    }
+
+    @keyframes float { 0% { transform: translateY(100vh) scale(1); opacity: 1; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
+
+    .open { background: linear-gradient(135deg, #ff8ac6, #a259ff); color: #fff; }
+    .open .envelope { transform: scale(0); opacity: 0; }
+    .open .letter { opacity: 1; pointer-events: all; }
+
+    /* Player de áudio */
+    .audio-player {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 25px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 10px 20px;
+      border-radius: 25px;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+      backdrop-filter: blur(6px);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      color: #fff;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .audio-player button {
+      background: linear-gradient(135deg, #ff8ac6, #a259ff);
+      border: none;
+      color: white;
+      font-size: 1.5em;
+      padding: 10px 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-right: 15px;
+      box-shadow: 0 0 10px rgba(255, 182, 255, 0.7);
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .audio-player button:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 182, 255, 1); }
+
+    .progress-container {
+      flex: 1;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .progress { width: 0%; height: 100%; background: linear-gradient(135deg, #ff8ac6, #a259ff); border-radius: 5px; transition: width 0.1s linear; }
+    #currentTime { font-size: 0.9em; }
+  </style>
+</head>
+<body>
+
+<div class="envelope" id="envelope">
+  <h1>💌 “Antes de tudo, leia com atenção: você é meu mundo 💌</h1>
+  <button class="btn-open" onclick="openLetter()">Abrir Carta 💖</button>
+</div>
+
+<div class="letter" id="letter">
+  <div class="hearts" id="hearts"></div>
+  <div class="message-box">
+    <h2>Para Você, Meu Amor 💜</h2>
+    <p>
+      Quem diria que algo tão simples como usar um brinco poderia me trazer algo tão maravilhoso para a vida? 
+      Agradeço a Deus todos os dias por ter colocado você no meu caminho.
+    </p>
+    <p>
+      Você me salvou de tantas formas, me fez sentir amado e especial de novo, me trouxe felicidade onde antes havia solidão. 
+      Sei que nem sempre fui o namorado mais atencioso ou carinhoso, e talvez minha ignorância às vezes tenha falhado, mas quero que saiba que meu amor por você é infinito.
+    </p>
+    <p>
+      Depois da perda do meu avô, senti-me sozinho, perdido… mas você apareceu e mudou tudo. 
+      Com você, aprendi o verdadeiro significado do amor, da cumplicidade e da alegria de compartilhar a vida com alguém que realmente se importa.
+    </p>
+    <p>
+      Dedico minha vida a você, a cada sorriso, a cada abraço, a cada momento que podemos viver juntos. 
+      Você não imagina o quanto eu te amo e o quanto quero construir um futuro lindo ao seu lado. Para sempre, meu coração será seu. 💖
+    </p>
+    <p>
+      E como diz a música, você nunca estará sozinha. 💜
+    </p>
+
+    <img src="foto.jpg" alt="nós dois" class="foto">
+    <div class="signature">Com todo o meu amor, <br> Seu namorado e Futuro marido! Espero que goste do presente, que presente? olha para tras! 💌</div>
+
+    <!-- Player de áudio -->
+    <div class="audio-player">
+      <button id="playBtn">▶️</button>
+      <div class="progress-container">
+        <div class="progress" id="progress"></div>
+      </div>
+      <span id="currentTime">0:00</span>
+    </div>
+    <audio id="musicPlayer">
+      <source src="audio/alone.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+</div>
+
+<script>
+  const body = document.body;
+  const heartsContainer = document.getElementById('hearts');
+
+  function openLetter() {
+    body.classList.add('open');
+
+    const player = document.getElementById('musicPlayer');
+    if(player) player.play().catch(()=>{}); // evitar erro de autoplay
+
+    createHeart(); // iniciar primeiro coração
+  }
+
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.fontSize = Math.random() * 25 + 15 + 'px';
+    heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+    heart.innerHTML = ['💜','💖','💞','💕'][Math.floor(Math.random() * 4)];
+    heartsContainer.appendChild(heart);
+    setTimeout(() => heart.remove(), 7000);
+  }
+
+  setInterval(createHeart, 300);
+
+  // PLAYER DE AUDIO
+  const playBtn = document.getElementById('playBtn');
+  const musicPlayer = document.getElementById('musicPlayer');
+  const progress = document.getElementById('progress');
+  const currentTimeEl = document.getElementById('currentTime');
+
+  playBtn.addEventListener('click', () => {
+    if(musicPlayer.paused) { musicPlayer.play(); playBtn.textContent = '⏸️'; }
+    else { musicPlayer.pause(); playBtn.textContent = '▶️'; }
+  });
+
+  musicPlayer.addEventListener('timeupdate', () => {
+    const percent = (musicPlayer.currentTime / musicPlayer.duration) * 100;
+    progress.style.width = percent + '%';
+    const minutes = Math.floor(musicPlayer.currentTime / 60);
+    const seconds = Math.floor(musicPlayer.currentTime % 60).toString().padStart(2, '0');
+    currentTimeEl.textContent = `${minutes}:${seconds}`;
+  });
+
+  document.querySelector('.progress-container').addEventListener('click', (e) => {
+    const width = e.currentTarget.clientWidth;
+    const clickX = e.offsetX;
+    const duration = musicPlayer.duration;
+    musicPlayer.currentTime = (clickX / width) * duration;
+  });
+</script>
+
+</body>
+</html>
